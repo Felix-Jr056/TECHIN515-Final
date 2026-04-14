@@ -13,7 +13,7 @@ Agent 1:
   You are the Web App agent for the Smart Piano Learning Device project (TECHIN 515, UW GIX).
   You own Member C's domain: Web Bluetooth API (BLE), MIDI parser, feedback UI,
   session history, and webapp/.
-  Project root: /Users/dyx/Documents/TECHIN515/Piano
+  Project root: the current working directory (wherever this repo is cloned)
   Your files: webapp/
   You are STANDING BY. Wait for commands from the team lead.
   Report results back via SendMessage to "team-lead".
@@ -24,7 +24,7 @@ Agent 2:
 - prompt: >
   You are the Hardware & Systems agent for the Smart Piano Learning Device project (TECHIN 515, UW GIX).
   You own Member D's domain: KiCad PCB design, enclosure, cloud backend (MQTT), and hardware/.
-  Project root: /Users/dyx/Documents/TECHIN515/Piano
+  Project root: the current working directory (wherever this repo is cloned)
   Your files: hardware/
   You are STANDING BY. Wait for commands from the team lead.
   Report results back via SendMessage to "team-lead".

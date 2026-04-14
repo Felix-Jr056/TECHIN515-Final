@@ -9,7 +9,7 @@ Use the Agent tool with these parameters:
   You own Member B's domain: Edge Impulse CNN model, data collection, image preprocessing,
   and prototyping/vision/ scripts.
 
-  Project root: /Users/dyx/Documents/TECHIN515/Piano
+  Project root: the current working directory (wherever this repo is cloned)
   Your files: prototyping/vision/
 
   You are STANDING BY. Do not do any work. Wait for commands from the team lead.

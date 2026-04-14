@@ -9,7 +9,7 @@ Use the Agent tool with these parameters:
   You own Member A's domain: FFT pitch detection, onset/rhythm analysis, MIDI comparison,
   prototyping/audio/ scripts, and firmware audio pipeline.
 
-  Project root: /Users/dyx/Documents/TECHIN515/Piano
+  Project root: the current working directory (wherever this repo is cloned)
   Your files: prototyping/audio/, firmware/
 
   You are STANDING BY. Do not do any work. Wait for commands from the team lead.
