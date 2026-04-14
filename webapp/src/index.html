@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Learning Device</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Piano Learning Device</h1>
+        <div id="ble-status">Disconnected</div>
+    </header>
+
+    <main>
+        <!-- MIDI Upload -->
+        <section id="midi-upload">
+            <h2>Load MIDI Reference</h2>
+            <input type="file" id="midi-file" accept=".mid,.midi">
+            <div id="midi-info"></div>
+        </section>
+
+        <!-- Real-time Feedback -->
+        <section id="feedback">
+            <div id="note-display">--</div>
+            <div id="timing-bar"></div>
+            <div id="posture-alert"></div>
+        </section>
+
+        <!-- Session Summary -->
+        <section id="session">
+            <h2>Session</h2>
+            <div id="session-stats"></div>
+        </section>
+    </main>
+
+    <script src="js/ble.js"></script>
+    <script src="js/midi-parser.js"></script>
+    <script src="js/feedback.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

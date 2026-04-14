@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# Datasets and large audio files (never commit raw data)
+prototyping/vision/datasets/
+prototyping/audio/test_samples/*.wav
+prototyping/audio/test_samples/*.mp3
+prototyping/audio/test_samples/*.aiff
+prototyping/audio/results/*.png
+
+# Environment / secrets
+.env
+config.env
+*.env
+
+# Edge Impulse exports
+*.tflite
+*.eim
+*.zip
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code local settings
+.claude/settings.local.json

@@ -1,0 +1,9 @@
+numpy
+scipy
+librosa
+matplotlib
+mido
+python-rtmidi
+Pillow
+opencv-python
+scikit-learn
