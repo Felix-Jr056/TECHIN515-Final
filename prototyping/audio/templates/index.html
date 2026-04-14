@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Piano Audio Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0e0a;
+      --surface:   #0f150f;
+      --border:    #1e331e;
+      --green:     #39ff6a;
+      --green-dim: #1a7a35;
+      --green-glow: 0 0 8px #39ff6a66, 0 0 20px #39ff6a22;
+      --amber:     #ffa040;
+      --text:      #b8d4b8;
+      --text-dim:  #4a6a4a;
+      --mono:      'Space Mono', 'Courier New', monospace;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────────── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────────── */
+    header { text-align: center; margin-bottom: 36px; }
+
+    header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--green);
+      text-shadow: var(--green-glow);
+      text-transform: uppercase;
+    }
+
+    header p {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .header-rule {
+      border: none;
+      border-top: 1px solid var(--green-dim);
+      margin: 16px auto 0;
+      width: 320px;
+      box-shadow: 0 0 6px var(--green-dim);
+    }
+
+    /* ── Upload zone ──────────────────────────────────────────────────── */
+    #drop-zone {
+      border: 2px dashed var(--green-dim);
+      border-radius: 4px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--surface);
+      position: relative;
+    }
+
+    #drop-zone.dragover,
+    #drop-zone:hover {
+      border-color: var(--green);
+      box-shadow: var(--green-glow);
+    }
+
+    #drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-icon {
+      font-size: 36px;
+      line-height: 1;
+      color: var(--green-dim);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    #drop-zone.has-file .upload-icon { color: var(--green); }
+
+    #file-label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    #file-name {
+      display: block;
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--green);
+      min-height: 1.4em;
+    }
+
+    /* ── Analyze button ───────────────────────────────────────────────── */
+    #analyze-btn {
+      display: block;
+      margin: 20px auto 0;
+      padding: 12px 36px;
+      background: transparent;
+      border: 2px solid var(--green-dim);
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+      border-radius: 2px;
+    }
+
+    #analyze-btn:hover:not(:disabled) {
+      border-color: var(--green);
+      box-shadow: var(--green-glow);
+      color: #fff;
+    }
+
+    #analyze-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* ── Scanning animation ───────────────────────────────────────────── */
+    #loader {
+      display: none;
+      text-align: center;
+      padding: 28px 0;
+    }
+
+    #loader.active { display: block; }
+
+    .scan-bar {
+      width: 260px;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 12px auto;
+      overflow: hidden;
+    }
+
+    .scan-bar-inner {
+      width: 40%;
+      height: 100%;
+      background: var(--green);
+      border-radius: 2px;
+      box-shadow: 0 0 8px var(--green);
+      animation: scan 1.1s ease-in-out infinite alternate;
+    }
+
+    @keyframes scan {
+      from { transform: translateX(-40%); }
+      to   { transform: translateX(290%); }
+    }
+
+    #loader p {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      animation: blink 1.2s step-start infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* ── Error box ────────────────────────────────────────────────────── */
+    #error-box {
+      display: none;
+      border: 1px solid #8b2020;
+      background: #1a0a0a;
+      color: #ff6060;
+      padding: 12px 16px;
+      margin-top: 16px;
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    /* ── Results ──────────────────────────────────────────────────────── */
+    #results {
+      display: none;
+      margin-top: 36px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+    }
+
+    /* Waveform plot */
+    #plot-section { margin-bottom: 28px; }
+
+    #plot-img {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      display: block;
+    }
+
+    /* Stats row */
+    #stats-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 28px;
+      font-size: 13px;
+    }
+
+    .stat {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 10px 18px;
+      border-radius: 2px;
+    }
+
+    .stat span { color: var(--green); font-weight: 700; }
+
+    /* Piano keyboard */
+    #piano-section { margin-bottom: 28px; }
+
+    .piano {
+      display: flex;
+      gap: 0;
+      height: 90px;
+      position: relative;
+      user-select: none;
+    }
+
+    .key {
+      position: relative;
+      border: 1px solid #1a2a1a;
+      border-radius: 0 0 3px 3px;
+      cursor: default;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .key.white {
+      background: #111a11;
+      width: 32px;
+      height: 90px;
+      z-index: 1;
+      border-bottom-width: 2px;
+    }
+
+    .key.black {
+      background: #060e06;
+      width: 20px;
+      height: 55px;
+      margin-left: -10px;
+      margin-right: -10px;
+      z-index: 2;
+      border-color: #0a140a;
+    }
+
+    .key.active.white {
+      background: #0d2e12;
+      box-shadow: inset 0 -3px 0 var(--green), 0 0 10px #39ff6a44;
+    }
+
+    .key.active.black {
+      background: #0d2e12;
+      box-shadow: inset 0 -2px 0 var(--green), 0 0 8px #39ff6a55;
+    }
+
+    .key-label {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      letter-spacing: 0;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .key.active .key-label { color: var(--green); }
+
+    .piano-note-labels {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .pnl-item {
+      font-size: 10px;
+      padding: 2px 7px;
+      border: 1px solid var(--green-dim);
+      border-radius: 2px;
+      color: var(--green);
+      background: #0a1a0a;
+    }
+
+    /* Notes table */
+    #table-section { margin-bottom: 28px; }
+
+    .table-wrap {
+      max-height: 260px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+    }
+
+    .table-wrap::-webkit-scrollbar { width: 6px; }
+    .table-wrap::-webkit-scrollbar-track { background: var(--surface); }
+    .table-wrap::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 3px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    thead th {
+      background: var(--surface);
+      color: var(--text-dim);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #0f1f0f; }
+
+    tbody td {
+      padding: 7px 14px;
+      color: var(--text);
+    }
+
+    tbody td:first-child { color: var(--text-dim); }
+    tbody td:nth-child(2) { color: var(--green); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <header>
+      <h1>Piano Audio Analyzer</h1>
+      <p>onset &amp; pitch detection</p>
+      <hr class="header-rule" />
+    </header>
+
+    <!-- Upload -->
+    <div id="drop-zone">
+      <input type="file" id="file-input" accept=".wav" />
+      <span class="upload-icon">⬡</span>
+      <span id="file-label">Drop a WAV file here or click to browse</span>
+      <span id="file-name"></span>
+    </div>
+
+    <button id="analyze-btn" disabled>▶ Analyze</button>
+
+    <!-- Loader -->
+    <div id="loader">
+      <div class="scan-bar"><div class="scan-bar-inner"></div></div>
+      <p>Scanning signal…</p>
+    </div>
+
+    <!-- Error -->
+    <div id="error-box"></div>
+
+    <!-- Results -->
+    <div id="results">
+
+      <!-- Waveform plot -->
+      <div id="plot-section">
+        <div class="section-label">Waveform + Onsets</div>
+        <img id="plot-img" alt="Onset plot" />
+      </div>
+
+      <!-- Stats -->
+      <div id="stats-row">
+        <div class="stat">Onsets detected: <span id="stat-onsets">—</span></div>
+        <div class="stat">Unique notes: <span id="stat-unique">—</span></div>
+      </div>
+
+      <!-- Piano keyboard -->
+      <div id="piano-section">
+        <div class="section-label">Detected Notes</div>
+        <div class="piano" id="piano"></div>
+        <div class="piano-note-labels" id="piano-note-labels"></div>
+      </div>
+
+      <!-- Notes table -->
+      <div id="table-section">
+        <div class="section-label">Note Log</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Time (s)</th><th>Note</th></tr>
+            </thead>
+            <tbody id="notes-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  // ── Piano layout C3 – B4 (2 octaves) ──────────────────────────────────
+  const PIANO_NOTES = [
+    // octave 3
+    {note:'C3',  type:'white'}, {note:'Cs3', type:'black'},
+    {note:'D3',  type:'white'}, {note:'Ds3', type:'black'},
+    {note:'E3',  type:'white'},
+    {note:'F3',  type:'white'}, {note:'Fs3', type:'black'},
+    {note:'G3',  type:'white'}, {note:'Gs3', type:'black'},
+    {note:'A3',  type:'white'}, {note:'As3', type:'black'},
+    {note:'B3',  type:'white'},
+    // octave 4
+    {note:'C4',  type:'white'}, {note:'Cs4', type:'black'},
+    {note:'D4',  type:'white'}, {note:'Ds4', type:'black'},
+    {note:'E4',  type:'white'},
+    {note:'F4',  type:'white'}, {note:'Fs4', type:'black'},
+    {note:'G4',  type:'white'}, {note:'Gs4', type:'black'},
+    {note:'A4',  type:'white'}, {note:'As4', type:'black'},
+    {note:'B4',  type:'white'},
+  ];
+
+  function buildPiano(activeNotes) {
+    const container = document.getElementById('piano');
+    container.innerHTML = '';
+    const active = new Set(activeNotes);
+    PIANO_NOTES.forEach(({note, type}) => {
+      const el = document.createElement('div');
+      el.className = `key ${type}${active.has(note) ? ' active' : ''}`;
+      el.dataset.note = note;
+      if (type === 'white') {
+        const lbl = document.createElement('span');
+        lbl.className = 'key-label';
+        lbl.textContent = note;
+        el.appendChild(lbl);
+      }
+      container.appendChild(el);
+    });
+
+    const labelsEl = document.getElementById('piano-note-labels');
+    labelsEl.innerHTML = '';
+    activeNotes.forEach(n => {
+      const span = document.createElement('span');
+      span.className = 'pnl-item';
+      span.textContent = n;
+      labelsEl.appendChild(span);
+    });
+  }
+
+  // ── File input ─────────────────────────────────────────────────────────
+  const dropZone   = document.getElementById('drop-zone');
+  const fileInput  = document.getElementById('file-input');
+  const fileNameEl = document.getElementById('file-name');
+  const analyzeBtn = document.getElementById('analyze-btn');
+  let selectedFile = null;
+
+  function setFile(file) {
+    if (!file || !file.name.toLowerCase().endsWith('.wav')) {
+      fileNameEl.textContent = '✗ Only .wav files are supported';
+      fileNameEl.style.color = '#ff6060';
+      selectedFile = null;
+      analyzeBtn.disabled = true;
+      dropZone.classList.remove('has-file');
+      return;
+    }
+    selectedFile = file;
+    fileNameEl.textContent = '▸ ' + file.name;
+    fileNameEl.style.color = '';
+    analyzeBtn.disabled = false;
+    dropZone.classList.add('has-file');
+  }
+
+  fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
+
+  dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    setFile(e.dataTransfer.files[0]);
+  });
+
+  // ── Analyze ────────────────────────────────────────────────────────────
+  const loader   = document.getElementById('loader');
+  const errorBox = document.getElementById('error-box');
+  const results  = document.getElementById('results');
+
+  analyzeBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    // Reset UI
+    errorBox.style.display = 'none';
+    results.style.display  = 'none';
+    loader.classList.add('active');
+    analyzeBtn.disabled = true;
+
+    const form = new FormData();
+    form.append('file', selectedFile);
+
+    try {
+      const resp = await fetch('/analyze', { method: 'POST', body: form });
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        throw new Error(data.error || `Server error ${resp.status}`);
+      }
+
+      // Plot
+      document.getElementById('plot-img').src = 'data:image/png;base64,' + data.plot_b64;
+
+      // Stats
+      document.getElementById('stat-onsets').textContent = data.total_onsets;
+      document.getElementById('stat-unique').textContent = data.unique_notes.length;
+
+      // Piano
+      buildPiano(data.unique_notes);
+
+      // Table
+      const tbody = document.getElementById('notes-tbody');
+      tbody.innerHTML = '';
+      data.notes.forEach((n, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i + 1}</td><td>${n.time.toFixed(3)}</td><td>${n.note}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      results.style.display = 'block';
+
+    } catch (err) {
+      errorBox.textContent = '✗ ' + err.message;
+      errorBox.style.display = 'block';
+    } finally {
+      loader.classList.remove('active');
+      analyzeBtn.disabled = false;
+    }
+  });
+  </script>
+</body>
+</html>

@@ -5,6 +5,7 @@ Usage:
     python onset_detect.py <wav_file>                    # detect and print onsets
     python onset_detect.py <wav_file> --ref onsets.csv   # evaluate against ground truth
     python onset_detect.py <wav_file> --plot             # save waveform+onset plot
+    python onset_detect.py <wav_file> --slice --output test_samples/  # slice into per-note WAVs
 
 Ground truth CSV format (one onset per line):
     onset_time_s
@@ -15,6 +16,7 @@ Ground truth CSV format (one onset per line):
 """
 
 import argparse
+import collections
 import csv
 import os
 import sys
@@ -22,6 +24,9 @@ import sys
 import librosa
 import matplotlib.pyplot as plt
 import numpy as np
+import soundfile as sf
+
+from pitch_detect import hps_pitch, freq_to_note
 
 
 # ---------------------------------------------------------------------------
@@ -196,6 +201,79 @@ def plot_onset_analysis(
 
 
 # ---------------------------------------------------------------------------
+# Slice mode
+# ---------------------------------------------------------------------------
+
+def slice_notes(
+    y: np.ndarray,
+    sr: int,
+    onsets: np.ndarray,
+    output_dir: str,
+    n_fft: int = 4096,
+) -> list[dict]:
+    """Slice audio at onsets, detect pitch per segment, export named WAVs.
+
+    Each segment runs from onset[i] to onset[i+1] (last segment to end of
+    file).  Pitch is detected via HPS on the highest-energy frame within the
+    segment.  Files are named {NoteName}_{index}.wav with a per-note counter
+    (e.g. C4_01.wav, C4_02.wav).
+
+    Args:
+        y:          Mono audio signal.
+        sr:         Sample rate (Hz).
+        onsets:     Onset times in seconds (sorted).
+        output_dir: Directory to write WAV slices.
+        n_fft:      FFT size for HPS pitch detection.
+
+    Returns:
+        List of dicts with keys: onset, note, path.
+    """
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Build segment boundaries in samples
+    onset_samples = (onsets * sr).astype(int)
+    boundaries = list(onset_samples) + [len(y)]
+
+    # First pass: detect pitch for every segment
+    notes = []
+    for i in range(len(onset_samples)):
+        start = boundaries[i]
+        end = boundaries[i + 1]
+        segment = y[start:end]
+
+        # Find best frame for HPS
+        if len(segment) >= n_fft:
+            hop = n_fft // 2
+            best_energy, best_frame = -1.0, segment[:n_fft]
+            for s in range(0, len(segment) - n_fft + 1, hop):
+                chunk = segment[s : s + n_fft]
+                energy = float(np.dot(chunk, chunk))
+                if energy > best_energy:
+                    best_energy = energy
+                    best_frame = chunk
+        else:
+            best_frame = np.pad(segment, (0, max(0, n_fft - len(segment))))
+
+        freq = hps_pitch(best_frame, sr, n_fft=n_fft)
+        note = freq_to_note(freq)
+        notes.append((note, segment))
+
+    # Second pass: assign per-note counters and write files
+    counter: dict[str, int] = collections.defaultdict(int)
+    results = []
+    for i, (note, segment) in enumerate(notes):
+        counter[note] += 1
+        filename = f"{note}_{counter[note]:02d}.wav"
+        filepath = os.path.join(output_dir, filename)
+        sf.write(filepath, segment, sr)
+        results.append({"onset": float(onsets[i]), "note": note, "path": filepath})
+        print(f"  [{i+1:3d}]  {onsets[i]:.3f}s  {note:<5}  -> {filename}")
+
+    print(f"\n{len(results)} slices written to {output_dir}")
+    return results
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -228,6 +306,16 @@ def main() -> None:
         "--tolerance", type=float, default=50.0,
         help="Evaluation match tolerance in ms (default 50)"
     )
+    parser.add_argument(
+        "--slice", action="store_true",
+        help="Slice audio at onsets and export per-note WAV files"
+    )
+    parser.add_argument(
+        "--output",
+        metavar="OUTPUT_DIR",
+        default=os.path.join(os.path.dirname(__file__), "test_samples"),
+        help="Output directory for sliced WAVs (default: ./test_samples/)",
+    )
     args = parser.parse_args()
 
     try:
@@ -254,6 +342,9 @@ def main() -> None:
         print(f"  Precision={metrics['precision']:.3f}  "
               f"Recall={metrics['recall']:.3f}  "
               f"F1={metrics['f1']:.3f}")
+
+    if args.slice:
+        slice_notes(y, sr, onsets, args.output)
 
     if args.plot:
         out = os.path.join(args.results, "onset_analysis.png")

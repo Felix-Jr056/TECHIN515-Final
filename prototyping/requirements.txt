@@ -7,3 +7,4 @@ python-rtmidi
 Pillow
 opencv-python
 scikit-learn
+flask

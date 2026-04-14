@@ -1,0 +1,53 @@
+/* style.css — Owner: Member C — Mobile-first base styles and layout variables */
+
+/* --- Custom properties --- */
+:root {
+    --color-bg: #ffffff;
+    --color-surface: #f5f5f5;
+    --color-primary: #4a90d9;
+    --color-correct: #4caf50;
+    --color-error: #e53935;
+    --color-text: #212121;
+    --color-text-muted: #757575;
+    --font-sans: system-ui, -apple-system, sans-serif;
+    --radius: 8px;
+    --spacing: 1rem;
+}
+
+/* --- Reset --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    padding: var(--spacing);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* --- Layout --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing);
+    border-bottom: 1px solid var(--color-surface);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing);
+    padding-top: var(--spacing);
+}
+
+section {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    padding: var(--spacing);
+}
