@@ -1,6 +1,6 @@
 Spawn the Web App and Hardware agents as a standing team, waiting for commands.
 
-First, use TeamCreate with:
+First, use ToolSearch with query "select:TeamCreate" to load the TeamCreate tool, then use TeamCreate with:
 - team_name: piano-team
 - description: App + Hardware workstream
 

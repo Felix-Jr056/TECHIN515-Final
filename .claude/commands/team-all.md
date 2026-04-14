@@ -1,6 +1,6 @@
 Spawn all 4 agents as a standing team, waiting for commands.
 
-First, use TeamCreate with:
+First, use ToolSearch with query "select:TeamCreate" to load the TeamCreate tool, then use TeamCreate with:
 - team_name: piano-team
 - description: Full piano project team — all 4 members
 
