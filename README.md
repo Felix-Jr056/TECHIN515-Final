@@ -66,22 +66,3 @@ Open **Chrome** at `http://localhost:8080`.
 3. Play notes on the piano — the matching key lights green and an onset flash fires on each strike.
 
 **Fallback:** If BLE pairing fails, the firmware still prints `MIDI:60 NOTE:C4 ONSET:1 CONF:0.87` to serial — project `pio device monitor` output for the demo.
-
-### Audio DSP validation (Python prototype)
-
-```bash
-cd prototyping/audio
-python pitch_detect.py --eval test_samples/   # confusion matrix on 87 sliced WAVs
-python onset_detect.py scale_recording.wav --plot
-```
-
-Expected: ≥90% pitch accuracy across C3–C5 range.
-
-## Team
-
-| Member | Role | Domain |
-|--------|------|--------|
-| A | Audio DSP Lead | `firmware/`, `prototyping/audio/` |
-| B | Vision ML Lead | `prototyping/vision/` |
-| C | Web App + Comms | `webapp/` |
-| D | Hardware + Systems | `hardware/` |
