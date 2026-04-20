@@ -3,14 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piano Learning Device</title>
+    <title>Posiano</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
-        <h1>Piano Learning Device</h1>
+        <h1>Posiano</h1>
         <div id="ble-status">Disconnected</div>
     </header>
+
+    <button id="connect-btn">Connect BLE</button>
+
+    <div id="onset-flash"></div>
+
+    <section id="keyboard-section">
+        <div id="piano-keyboard">
+            <!-- White keys: C3–C6 (MIDI 48–84), 22 keys -->
+            <div class="key-white" data-midi="48"></div>
+            <div class="key-white" data-midi="50"></div>
+            <div class="key-white" data-midi="52"></div>
+            <div class="key-white" data-midi="53"></div>
+            <div class="key-white" data-midi="55"></div>
+            <div class="key-white" data-midi="57"></div>
+            <div class="key-white" data-midi="59"></div>
+            <div class="key-white" data-midi="60"></div>
+            <div class="key-white" data-midi="62"></div>
+            <div class="key-white" data-midi="64"></div>
+            <div class="key-white" data-midi="65"></div>
+            <div class="key-white" data-midi="67"></div>
+            <div class="key-white" data-midi="69"></div>
+            <div class="key-white" data-midi="71"></div>
+            <div class="key-white" data-midi="72"></div>
+            <div class="key-white" data-midi="74"></div>
+            <div class="key-white" data-midi="76"></div>
+            <div class="key-white" data-midi="77"></div>
+            <div class="key-white" data-midi="79"></div>
+            <div class="key-white" data-midi="81"></div>
+            <div class="key-white" data-midi="83"></div>
+            <div class="key-white" data-midi="84"></div>
+            <!-- Black keys: C#3–A#5 (MIDI 49–82), 15 keys -->
+            <div class="key-black" data-midi="49"></div>
+            <div class="key-black" data-midi="51"></div>
+            <div class="key-black" data-midi="54"></div>
+            <div class="key-black" data-midi="56"></div>
+            <div class="key-black" data-midi="58"></div>
+            <div class="key-black" data-midi="61"></div>
+            <div class="key-black" data-midi="63"></div>
+            <div class="key-black" data-midi="66"></div>
+            <div class="key-black" data-midi="68"></div>
+            <div class="key-black" data-midi="70"></div>
+            <div class="key-black" data-midi="73"></div>
+            <div class="key-black" data-midi="75"></div>
+            <div class="key-black" data-midi="78"></div>
+            <div class="key-black" data-midi="80"></div>
+            <div class="key-black" data-midi="82"></div>
+        </div>
+    </section>
 
     <main>
         <!-- MIDI Upload -->

@@ -26,7 +26,7 @@ body {
     background: var(--color-bg);
     color: var(--color-text);
     padding: var(--spacing);
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -51,3 +51,99 @@ section {
     border-radius: var(--radius);
     padding: var(--spacing);
 }
+
+/* --- Connect button --- */
+#connect-btn {
+    display: block;
+    margin: var(--spacing) 0;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.5rem 1.25rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+#connect-btn:hover {
+    opacity: 0.85;
+}
+
+/* --- Note display --- */
+#note-display {
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+/* --- Onset flash --- */
+#onset-flash {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: transparent;
+    margin-bottom: 0.5rem;
+}
+@keyframes flash-yellow {
+    from { background: #ffdd00; opacity: 1; }
+    to   { background: #ffdd00; opacity: 0; }
+}
+#onset-flash.onset-flash {
+    animation: flash-yellow 150ms ease-out forwards;
+}
+
+/* --- Piano keyboard --- */
+#keyboard-section {
+    background: none;
+    padding: var(--spacing) 0;
+    overflow-x: auto;
+}
+#piano-keyboard {
+    position: relative;
+    display: flex;
+    height: 120px;
+    width: 100%;
+    min-width: 300px;
+    user-select: none;
+}
+.key-white {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #999;
+    border-radius: 0 0 4px 4px;
+    position: relative;
+    z-index: 1;
+}
+.key-white.lit {
+    background: #00cc44;
+}
+.key-black {
+    position: absolute;
+    width: 2.5%;
+    height: 65%;
+    background: #111;
+    border-radius: 0 0 3px 3px;
+    z-index: 2;
+    top: 0;
+}
+.key-black.lit {
+    background: #009933;
+}
+
+/* Black key positions — 22 white keys, each = 100/22 ≈ 4.5455%
+   formula: left = (white_index_to_left + 1) * 4.5455% - 1.25%     */
+[data-midi="49"] { left:  3.30%; } /* Cs3: between C3(0)  D3(1)  */
+[data-midi="51"] { left:  7.84%; } /* Ds3: between D3(1)  E3(2)  */
+[data-midi="54"] { left: 16.93%; } /* Fs3: between F3(3)  G3(4)  */
+[data-midi="56"] { left: 21.48%; } /* Gs3: between G3(4)  A3(5)  */
+[data-midi="58"] { left: 26.02%; } /* As3: between A3(5)  B3(6)  */
+[data-midi="61"] { left: 35.11%; } /* Cs4: between C4(7)  D4(8)  */
+[data-midi="63"] { left: 39.66%; } /* Ds4: between D4(8)  E4(9)  */
+[data-midi="66"] { left: 48.75%; } /* Fs4: between F4(10) G4(11) */
+[data-midi="68"] { left: 53.30%; } /* Gs4: between G4(11) A4(12) */
+[data-midi="70"] { left: 57.84%; } /* As4: between A4(12) B4(13) */
+[data-midi="73"] { left: 66.93%; } /* Cs5: between C5(14) D5(15) */
+[data-midi="75"] { left: 71.48%; } /* Ds5: between D5(15) E5(16) */
+[data-midi="78"] { left: 80.57%; } /* Fs5: between F5(17) G5(18) */
+[data-midi="80"] { left: 85.11%; } /* Gs5: between G5(18) A5(19) */
+[data-midi="82"] { left: 89.66%; } /* As5: between A5(19) B5(20) */

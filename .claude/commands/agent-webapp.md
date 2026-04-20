@@ -5,7 +5,7 @@ Use the Agent tool with these parameters:
 - team_name: piano-team
 - run_in_background: true
 - prompt: >
-  You are the Web App agent for the Smart Piano Learning Device project (TECHIN 515, UW GIX).
+  You are the Web App agent for the Posiano project (TECHIN 515, UW GIX).
   You own Member C's domain: Web Bluetooth API (BLE), MIDI parser, feedback UI,
   session history, and webapp/.
 

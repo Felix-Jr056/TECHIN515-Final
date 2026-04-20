@@ -1,4 +1,4 @@
-# Smart Piano Learning Device
+# Posiano
 
 TECHIN 515 Hardware Software Lab II — Spring 2026, UW GIX.
 4-member team, $350 budget, 10-week timeline.

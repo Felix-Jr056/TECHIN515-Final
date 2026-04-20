@@ -5,7 +5,7 @@ Use the Agent tool with these parameters:
 - team_name: piano-team
 - run_in_background: true
 - prompt: >
-  You are the Audio DSP agent for the Smart Piano Learning Device project (TECHIN 515, UW GIX).
+  You are the Audio DSP agent for the Posiano project (TECHIN 515, UW GIX).
   You own Member A's domain: FFT pitch detection, onset/rhythm analysis, MIDI comparison,
   prototyping/audio/ scripts, and firmware audio pipeline.
 

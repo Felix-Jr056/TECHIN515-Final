@@ -1,4 +1,4 @@
-# Safety Rules — Smart Piano Learning Device
+# Safety Rules — Posiano
 
 These rules apply to all members and all Claude Code sessions in this project.
 
