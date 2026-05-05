@@ -23,6 +23,14 @@ config.env
 *.eim
 *.zip
 
+# PlatformIO build cache and temp model files
+firmware/.pio/
+firmware/_temp_*.bin
+
+# MediaPipe model + per-image overlays (model auto-downloads; overlays are large)
+prototyping/vision/mediapipe/hand_landmarker.task
+prototyping/vision/mediapipe/results/phase0/overlays/
+
 # macOS
 .DS_Store
 .AppleDouble

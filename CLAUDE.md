@@ -17,7 +17,7 @@ OV5647 Cam --[CSI]--> Grove Vision AI V2 --[I2C Grove]--^  |
 ```
 
 - **XIAO ESP32S3**: Main MCU — FFT pitch detection, onset/rhythm analysis, MIDI comparison, BLE, Wi-Fi
-- **Grove Vision AI V2**: Posture ML — Arm Cortex-M55 + Ethos-U55 NPU, Edge Impulse CNN (INT8), 3 classes
+- **Grove Vision AI V2**: Posture ML — Arm Cortex-M55 + Ethos-U55 NPU, Edge Impulse CNN (INT8), 4 classes
 - **INMP441**: I2S MEMS mic — digital audio, no ADC needed
 - **OV5647**: CSI camera on Grove Vision AI — 96×96 grayscale for posture
 
@@ -34,7 +34,7 @@ OV5647 Cam --[CSI]--> Grove Vision AI V2 --[I2C Grove]--^  |
 
 - **Always ask before generating** — no autonomous decisions on architecture, sensor choices, or scope
 - Audio pipeline is pure DSP (FFT + spectral flux) — no ML
-- Posture pipeline is ML (Edge Impulse CNN) — 3 classes: correct, wrist-dropped, fingers-flat
+- Posture pipeline is ML (Edge Impulse CNN) — 4 classes: correct, wrist-dropped, fingers-flat, collapsed-knuckles
 - 150–200 images per class, phased: Phase 1 one person, Phase 2 add 2–3 more hands
 - Web app uses Web Bluetooth API (Chrome only) — no native app
 - Budget: $350 total, current BOM estimate ~$130–165
@@ -51,6 +51,6 @@ OV5647 Cam --[CSI]--> Grove Vision AI V2 --[I2C Grove]--^  |
 ## Verification
 
 - Audio: confusion matrix on 50+ note samples, ≥90% accuracy across C3–C6
-- Posture: Edge Impulse validation ≥80% on 3-class problem
+- Posture: Edge Impulse validation ≥80% on 4-class problem
 - BLE: <200ms end-to-end latency, ≥95% packet delivery over 5 min
 - I2C: zero packet loss over 5-min continuous test between Grove Vision AI and XIAO
